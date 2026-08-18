@@ -20,7 +20,7 @@ def load_tasks(path: str | Path) -> list[Task]:
                 task_id=task_id,
                 design=str(raw["design"]),
                 platform=str(raw["platform"]),
-                category=str(raw["category"]),
+                error_category=str(raw["error_category"]),
                 failed_stage=str(raw["failed_stage"]),
                 editable_files=tuple(raw["editable_files"]),
                 files={str(k): str(v) for k, v in raw["files"].items()},
@@ -31,4 +31,3 @@ def load_tasks(path: str | Path) -> list[Task]:
             )
         )
     return tasks
-

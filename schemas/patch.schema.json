@@ -1,40 +1,60 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "patch.schema.json",
-  "title": "FlowFixer-EDA constrained patch",
+  "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "additionalProperties": false,
-  "required": ["diagnosis", "category", "restart_stage", "operations"],
   "properties": {
-    "diagnosis": {"type": "string", "minLength": 1},
-    "category": {
+    "root_cause": {"type": "string"},
+    "error_category": {
       "type": "string",
       "enum": [
-        "RTL error",
-        "Port mismatch",
-        "SDC error",
-        "Config error",
-        "Floorplan error",
-        "Placement error",
-        "Routing error",
-        "Timing error"
+        "rtl_error",
+        "port_mismatch",
+        "sdc_error",
+        "config_error",
+        "floorplan_error",
+        "placement_error",
+        "routing_error",
+        "timing_error"
       ]
     },
-    "restart_stage": {"type": "string", "minLength": 1},
-    "operations": {
+    "failed_stage": {"type": "string"},
+    "editable_files": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string"}
+    },
+    "patches": {
       "type": "array",
       "minItems": 1,
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["file", "op", "old", "new"],
         "properties": {
-          "file": {"type": "string", "minLength": 1},
-          "op": {"const": "replace"},
-          "old": {"type": "string", "minLength": 1},
-          "new": {"type": "string"}
-        }
+          "file": {"type": "string"},
+          "action": {
+            "type": "string",
+            "enum": ["replace", "insert_before", "insert_after", "delete", "set_variable"]
+          },
+          "target_match": {"type": "string"},
+          "content": {"type": "string"},
+          "justification": {"type": "string"}
+        },
+        "required": ["file", "action", "target_match", "content", "justification"]
       }
-    }
-  }
+    },
+    "rerun_stage": {"type": "string"},
+    "expected_effect": {"type": "string"},
+    "risk_level": {"type": "string", "enum": ["low", "medium", "high"]}
+  },
+  "required": [
+    "root_cause",
+    "error_category",
+    "failed_stage",
+    "editable_files",
+    "patches",
+    "rerun_stage",
+    "expected_effect",
+    "risk_level"
+  ]
 }

@@ -32,7 +32,7 @@ def main(argv: list[str] | None = None) -> int:
     tasks = load_tasks(args.dataset)
     if args.command == "list":
         for task in tasks:
-            print(f"{task.task_id}\t{task.category}\t{task.failed_stage}\t{task.platform}")
+            print(f"{task.task_id}\t{task.error_category}\t{task.failed_stage}\t{task.platform}")
         return 0
     if args.command == "inspect":
         task = next((item for item in tasks if item.task_id == args.task_id), None)

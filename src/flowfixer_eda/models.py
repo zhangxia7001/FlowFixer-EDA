@@ -8,37 +8,55 @@ from typing import Any, Protocol
 @dataclass(frozen=True)
 class Operation:
     file: str
-    op: str
-    old: str
-    new: str
+    action: str
+    target_match: str
+    content: str
+    justification: str
 
     @classmethod
     def from_dict(cls, value: dict[str, Any]) -> "Operation":
-        return cls(**{key: value[key] for key in ("file", "op", "old", "new")})
+        return cls(
+            **{
+                key: str(value[key])
+                for key in ("file", "action", "target_match", "content", "justification")
+            }
+        )
 
 
 @dataclass(frozen=True)
 class Patch:
-    diagnosis: str
-    category: str
-    restart_stage: str
-    operations: tuple[Operation, ...]
+    root_cause: str
+    error_category: str
+    failed_stage: str
+    editable_files: tuple[str, ...]
+    patches: tuple[Operation, ...]
+    rerun_stage: str
+    expected_effect: str
+    risk_level: str
 
     @classmethod
     def from_dict(cls, value: dict[str, Any]) -> "Patch":
         return cls(
-            diagnosis=str(value["diagnosis"]),
-            category=str(value["category"]),
-            restart_stage=str(value["restart_stage"]),
-            operations=tuple(Operation.from_dict(item) for item in value["operations"]),
+            root_cause=str(value["root_cause"]),
+            error_category=str(value["error_category"]),
+            failed_stage=str(value["failed_stage"]),
+            editable_files=tuple(str(item) for item in value["editable_files"]),
+            patches=tuple(Operation.from_dict(item) for item in value["patches"]),
+            rerun_stage=str(value["rerun_stage"]),
+            expected_effect=str(value["expected_effect"]),
+            risk_level=str(value["risk_level"]),
         )
 
     def to_dict(self) -> dict[str, Any]:
         return {
-            "diagnosis": self.diagnosis,
-            "category": self.category,
-            "restart_stage": self.restart_stage,
-            "operations": [operation.__dict__ for operation in self.operations],
+            "root_cause": self.root_cause,
+            "error_category": self.error_category,
+            "failed_stage": self.failed_stage,
+            "editable_files": list(self.editable_files),
+            "patches": [operation.__dict__ for operation in self.patches],
+            "rerun_stage": self.rerun_stage,
+            "expected_effect": self.expected_effect,
+            "risk_level": self.risk_level,
         }
 
 
@@ -47,7 +65,7 @@ class Task:
     task_id: str
     design: str
     platform: str
-    category: str
+    error_category: str
     failed_stage: str
     editable_files: tuple[str, ...]
     files: dict[str, str]
@@ -85,5 +103,4 @@ class ProposalBackend(Protocol):
 
 
 class Verifier(Protocol):
-    def verify(self, task: Task, workspace: Path, restart_stage: str) -> VerificationResult: ...
-
+    def verify(self, task: Task, workspace: Path, rerun_stage: str) -> VerificationResult: ...

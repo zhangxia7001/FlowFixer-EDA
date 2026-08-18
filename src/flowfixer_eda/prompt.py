@@ -6,10 +6,22 @@ from .models import DiagnosticRecord, Task
 
 
 PATCH_CONTRACT = {
-    "diagnosis": "concise root cause",
-    "category": "one benchmark error category",
-    "restart_stage": "earliest stage affected by the patch",
-    "operations": [{"file": "relative editable path", "op": "replace", "old": "unique text", "new": "replacement"}],
+    "root_cause": "concise initiating cause",
+    "error_category": "one of the eight snake_case error categories",
+    "failed_stage": "earliest fatal flow stage",
+    "editable_files": ["task-authorized relative path"],
+    "patches": [
+        {
+            "file": "relative editable path",
+            "action": "replace|insert_before|insert_after|delete|set_variable",
+            "target_match": "text that occurs exactly once",
+            "content": "replacement or inserted content",
+            "justification": "why the operation repairs the root cause",
+        }
+    ],
+    "rerun_stage": "earliest stage affected by the patch",
+    "expected_effect": "expected executable outcome",
+    "risk_level": "low|medium|high",
 }
 
 
@@ -25,4 +37,3 @@ def build_prompt(task: Task, record: DiagnosticRecord, retrieved: list[str], fee
             "Do not weaken reference constraints, bypass verification, or edit protected files.",
         ]
     )
-

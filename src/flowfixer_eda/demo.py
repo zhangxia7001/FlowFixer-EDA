@@ -15,7 +15,7 @@ class ReferencePatchBackend:
 class ContractVerifier:
     """Checks task expected files and declared quality gates."""
 
-    def verify(self, task: Task, workspace: Path, restart_stage: str) -> VerificationResult:
+    def verify(self, task: Task, workspace: Path, rerun_stage: str) -> VerificationResult:
         mismatches: list[str] = []
         for name, expected in task.expected_files.items():
             target = workspace / name

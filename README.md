@@ -6,8 +6,10 @@ minimal sample dataset covering eight RTL-to-GDS error categories.
 ## Contents
 
 - Stage-aware log parsing and lightweight knowledge retrieval
-- Structured patch generation and validation
+- Structured patch generation with five deterministic operations
+- File-scope, applicability, overlap, repetition, and safety validation
 - Tool-feedback repair loop and evaluation metrics
+- Disposable checkpoint workspaces and trusted EDA command adapters
 - JSON patch schema: `schemas/patch.schema.json`
 - Minimal sample dataset with eight tasks: `dataset/tasks.json`
 - Automated tests: `tests/test_artifact.py`
