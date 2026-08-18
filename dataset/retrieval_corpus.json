@@ -1,0 +1,14 @@
+{
+  "description": "Independently authored toy guidance; no benchmark-derived content.",
+  "chunks": [
+    {"id": "rtl-01", "text": "An undeclared RTL identifier is commonly caused by a signal rename or typographical error. Repair the local identifier and rerun RTL preparation."},
+    {"id": "port-01", "text": "A named-port mismatch should be repaired at the module instance or interface definition without bypassing the instance."},
+    {"id": "sdc-01", "text": "An SDC get_ports query that matches no object should be checked against the top-level RTL port names. Do not relax the reference clock period."},
+    {"id": "config-01", "text": "A missing VERILOG_FILES path should be corrected to an existing user-design source path; do not edit tool or PDK files."},
+    {"id": "floorplan-01", "text": "Extremely high core utilization may make floorplan initialization infeasible. Restore a design-specific reference utilization."},
+    {"id": "placement-01", "text": "Placement density near one may prevent legalization. Restore the validated design configuration rather than disabling checks."},
+    {"id": "routing-01", "text": "A routing maximum layer that is too low can create unrouted nets. Restore the validated routing stack limit."},
+    {"id": "timing-01", "text": "An accidental clock-period edit should be restored to the reference constraint. Increasing the reference period merely to hide a violation is prohibited."}
+  ]
+}
+

@@ -1,0 +1,110 @@
+{
+  "dataset": "FlowFixer-EDA eight-category dataset",
+  "version": "0.1.0",
+  "tasks": [
+    {
+      "task_id": "rtl-undeclared-signal",
+      "design": "toy_accumulator",
+      "platform": "sky130hd",
+      "category": "RTL error",
+      "failed_stage": "RTL preparation",
+      "editable_files": ["src/top.v"],
+      "files": {"src/top.v": "module top(input [1:0] in_a, input [1:0] in_b, output [2:0] out);\n  assign out = in_a + in_berr;\nendmodule\n"},
+      "log": "RTL preparation ERROR src/top.v:2: Unable to bind wire/reg/memory `in_berr'\nFATAL: elaboration failed",
+      "reference_patch": {"diagnosis": "Typographical error refers to an undeclared RTL input", "category": "RTL error", "restart_stage": "RTL preparation", "operations": [{"file": "src/top.v", "op": "replace", "old": "in_berr", "new": "in_b"}]},
+      "expected_files": {"src/top.v": "module top(input [1:0] in_a, input [1:0] in_b, output [2:0] out);\n  assign out = in_a + in_b;\nendmodule\n"},
+      "quality_gates": {"simulation": true, "equivalence": true, "timing": true, "drc_route": true, "ppa": true}
+    },
+    {
+      "task_id": "port-name-mismatch",
+      "design": "toy_counter",
+      "platform": "nangate45",
+      "category": "Port mismatch",
+      "failed_stage": "Synthesis",
+      "editable_files": ["src/top.v"],
+      "files": {"src/top.v": "module child(input clk); endmodule\nmodule top(input sys_clk); child u1 (.clk_in(sys_clk)); endmodule\n"},
+      "log": "Synthesis ERROR src/top.v:2: port `clk_in' is not a port of u1\nFATAL: hierarchy check failed",
+      "reference_patch": {"diagnosis": "The instance uses a stale named-port identifier", "category": "Port mismatch", "restart_stage": "RTL preparation", "operations": [{"file": "src/top.v", "op": "replace", "old": ".clk_in(sys_clk)", "new": ".clk(sys_clk)"}]},
+      "expected_files": {"src/top.v": "module child(input clk); endmodule\nmodule top(input sys_clk); child u1 (.clk(sys_clk)); endmodule\n"},
+      "quality_gates": {"simulation": true, "equivalence": true, "timing": true, "drc_route": true, "ppa": true}
+    },
+    {
+      "task_id": "sdc-clock-port",
+      "design": "toy_uart",
+      "platform": "sky130hd",
+      "category": "SDC error",
+      "failed_stage": "Constraint parsing",
+      "editable_files": ["constraints/top.sdc"],
+      "files": {"constraints/top.sdc": "create_clock -period 10.0 [get_ports clk_misref]\n"},
+      "log": "Constraint parsing WARNING: get_ports clk_misref matched no objects\nERROR: create_clock requires one source object\nFATAL: SDC parsing failed",
+      "reference_patch": {"diagnosis": "The SDC references a nonexistent top-level clock port", "category": "SDC error", "restart_stage": "Constraint parsing", "operations": [{"file": "constraints/top.sdc", "op": "replace", "old": "clk_misref", "new": "clk"}]},
+      "expected_files": {"constraints/top.sdc": "create_clock -period 10.0 [get_ports clk]\n"},
+      "quality_gates": {"timing": true, "drc_route": true, "ppa": true}
+    },
+    {
+      "task_id": "config-source-path",
+      "design": "toy_gcd",
+      "platform": "nangate45",
+      "category": "Config error",
+      "failed_stage": "RTL preparation",
+      "editable_files": ["config.tcl"],
+      "files": {"config.tcl": "set ::env(DESIGN_NAME) top\nset ::env(VERILOG_FILES) \"src/top_missing.v\"\n"},
+      "log": "RTL preparation ERROR: src/top_missing.v does not exist\nFATAL: no Verilog sources loaded",
+      "reference_patch": {"diagnosis": "VERILOG_FILES points to a nonexistent source", "category": "Config error", "restart_stage": "RTL preparation", "operations": [{"file": "config.tcl", "op": "replace", "old": "src/top_missing.v", "new": "src/top.v"}]},
+      "expected_files": {"config.tcl": "set ::env(DESIGN_NAME) top\nset ::env(VERILOG_FILES) \"src/top.v\"\n"},
+      "quality_gates": {"timing": true, "drc_route": true, "ppa": true}
+    },
+    {
+      "task_id": "floorplan-utilization",
+      "design": "toy_macro",
+      "platform": "sky130hd",
+      "category": "Floorplan error",
+      "failed_stage": "Floorplanning",
+      "editable_files": ["config.tcl"],
+      "files": {"config.tcl": "set ::env(FP_CORE_UTIL) 98\n"},
+      "log": "Floorplanning ERROR: core area is insufficient for placed instances\nFATAL: initialize_floorplan failed AREA=1000",
+      "reference_patch": {"diagnosis": "The injected core utilization is infeasible", "category": "Floorplan error", "restart_stage": "Floorplanning", "operations": [{"file": "config.tcl", "op": "replace", "old": "FP_CORE_UTIL) 98", "new": "FP_CORE_UTIL) 45"}]},
+      "expected_files": {"config.tcl": "set ::env(FP_CORE_UTIL) 45\n"},
+      "quality_gates": {"timing": true, "drc_route": true, "ppa": true}
+    },
+    {
+      "task_id": "placement-density",
+      "design": "toy_aes",
+      "platform": "nangate45",
+      "category": "Placement error",
+      "failed_stage": "Placement",
+      "editable_files": ["config.tcl"],
+      "files": {"config.tcl": "set ::env(PL_TARGET_DENSITY) 0.98\n"},
+      "log": "Placement WARNING: overflow did not converge\nERROR: detailed placement legalization failed\nFATAL: placement stage failed",
+      "reference_patch": {"diagnosis": "The target placement density is beyond the validated limit", "category": "Placement error", "restart_stage": "Placement", "operations": [{"file": "config.tcl", "op": "replace", "old": "PL_TARGET_DENSITY) 0.98", "new": "PL_TARGET_DENSITY) 0.60"}]},
+      "expected_files": {"config.tcl": "set ::env(PL_TARGET_DENSITY) 0.60\n"},
+      "quality_gates": {"timing": true, "drc_route": true, "ppa": true}
+    },
+    {
+      "task_id": "routing-layer-limit",
+      "design": "toy_jpeg",
+      "platform": "sky130hd",
+      "category": "Routing error",
+      "failed_stage": "Routing",
+      "editable_files": ["config.tcl"],
+      "files": {"config.tcl": "set ::env(RT_MAX_LAYER) Met2\n"},
+      "log": "Routing WARNING: severe congestion on Met2\nERROR: 31 nets remain unrouted\nFATAL: detailed routing failed",
+      "reference_patch": {"diagnosis": "The routing stack is artificially restricted", "category": "Routing error", "restart_stage": "Routing", "operations": [{"file": "config.tcl", "op": "replace", "old": "RT_MAX_LAYER) Met2", "new": "RT_MAX_LAYER) Met5"}]},
+      "expected_files": {"config.tcl": "set ::env(RT_MAX_LAYER) Met5\n"},
+      "quality_gates": {"timing": true, "drc_route": true, "ppa": true}
+    },
+    {
+      "task_id": "timing-reference-period",
+      "design": "toy_riscv",
+      "platform": "nangate45",
+      "category": "Timing error",
+      "failed_stage": "Timing analysis",
+      "editable_files": ["constraints/top.sdc"],
+      "files": {"constraints/top.sdc": "create_clock -period 2.0 [get_ports clk]\nset_clock_uncertainty 5.0 [get_clocks clk]\n"},
+      "log": "Timing analysis ERROR: setup violation WNS=-4.82 TNS=-154.6\nWARNING: clock uncertainty consumes the timing budget\nFATAL: reference timing target not met",
+      "reference_patch": {"diagnosis": "The task contains an injected excessive clock-uncertainty value", "category": "Timing error", "restart_stage": "Constraint parsing", "operations": [{"file": "constraints/top.sdc", "op": "replace", "old": "set_clock_uncertainty 5.0", "new": "set_clock_uncertainty 0.1"}]},
+      "expected_files": {"constraints/top.sdc": "create_clock -period 2.0 [get_ports clk]\nset_clock_uncertainty 0.1 [get_clocks clk]\n"},
+      "quality_gates": {"timing": true, "drc_route": true, "ppa": true}
+    }
+  ]
+}
