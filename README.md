@@ -1,7 +1,7 @@
 # FlowFixer-EDA
 
 This package implements the core FlowFixer-EDA workflow and provides a
-dataset covering eight RTL-to-GDS error categories.
+minimal sample dataset covering eight RTL-to-GDS error categories.
 
 ## Contents
 
@@ -9,7 +9,7 @@ dataset covering eight RTL-to-GDS error categories.
 - Structured patch generation and validation
 - Tool-feedback repair loop and evaluation metrics
 - JSON patch schema: `schemas/patch.schema.json`
-- Eight dataset tasks: `dataset/tasks.json`
+- Minimal sample dataset with eight tasks: `dataset/tasks.json`
 - Automated tests: `tests/test_artifact.py`
 
 ## Quick start

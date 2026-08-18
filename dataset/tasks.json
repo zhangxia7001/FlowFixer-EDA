@@ -1,5 +1,5 @@
 {
-  "dataset": "FlowFixer-EDA eight-category dataset",
+  "dataset": "FlowFixer-EDA minimal sample dataset",
   "version": "0.1.0",
   "tasks": [
     {
